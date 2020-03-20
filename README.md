@@ -1,4 +1,4 @@
-# monrepo
+# monlythic repository
 sample project for building a jenkins pipeline with a monolythic repository
 
 - root jenkinsfile 
