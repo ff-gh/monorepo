@@ -22,7 +22,7 @@ pipeline {
                 build 'project1'
             }
         }
-        stage('Echo'){
+        stage('echo'){
             steps {
                 echo "ok #1"
             }
