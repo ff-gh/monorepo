@@ -22,5 +22,10 @@ pipeline {
                 build 'project1'
             }
         }
+        stage('Echo'){
+            steps {
+                echo "ok #1"
+            }
+        }
     }
 }
