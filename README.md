@@ -1,5 +1,5 @@
 # monlithic repository
-sample project for building a jenkins pipeline with a monolythic repository
+sample project for building a jenkins pipeline with a monolithic repository
 
 - root jenkinsfile 
     - parse git commits for folders (projects) that changed
