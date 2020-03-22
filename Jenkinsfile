@@ -24,7 +24,7 @@ pipeline {
         }
         stage('echo'){
             steps {
-                echo "ok #8"
+                echo "ok #9"
             }
         }
     }
