@@ -20,7 +20,7 @@ pipeline {
             }
             steps {
                 echo "branch: ${env.BRANCH_NAME}"
-                //build 'project1'
+                build 'project1/${env.BRANCH_NAME}'
             }
         }
         stage('echo'){
