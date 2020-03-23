@@ -5,7 +5,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh p1.sh
+                echo "build of project 1"
             }
         }
     }
