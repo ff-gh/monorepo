@@ -19,13 +19,11 @@ pipeline {
                 }
             }
             steps {
-                build 'project1/${env.BRANCH_NAME}'
+                build "../project1/${env.BRANCH_NAME}"
             }
         }
         stage('echo'){
             steps {
-                echo "branch: ${env.BRANCH_NAME}"
-                build "../project1/${env.BRANCH_NAME}"
                 echo "ok #11"
             }
         }
