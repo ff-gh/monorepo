@@ -1,1 +1,1 @@
-echo "building project 1"
+ls
