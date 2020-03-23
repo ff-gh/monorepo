@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "building project 1"
+echo "building project 1!"
