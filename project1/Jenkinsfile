@@ -6,9 +6,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('project1') {
-                    script {
-                        sh('p1.sh')
-                    }
+                    sh('p1.sh')
                 }
             }
         }
