@@ -19,6 +19,7 @@ pipeline {
                 }
             }
             steps {
+                echo "building project 1"
                 build "../project1/$BRANCH_NAME"
             }
         }
@@ -30,6 +31,7 @@ pipeline {
                 }
             }
             steps {
+                echo "building project 2"
                 build "../project2/$BRANCH_NAME"
             }
         }
@@ -41,6 +43,7 @@ pipeline {
                 }
             }
             steps {
+                echo "building project 3"
                 build "../project3/$BRANCH_NAME"
             }
         }
