@@ -1,0 +1,14 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                dir('project2') {
+                    sh('bash p2.sh')
+                }
+            }
+        }
+    }
+}
