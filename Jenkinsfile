@@ -1,6 +1,11 @@
 
 pipeline {
     agent any
+    environment {
+        project1Path = 'project1/'
+        project2Path = 'project2/'
+        project3Path = 'project3/'
+    }
 
     stages {
         stage('init') {
@@ -16,14 +21,12 @@ pipeline {
                 stage('project1') {
                     when {
                         expression {
-                            def projectPath = 'project1/'
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, projectPath)
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1Path)
                         }
                     }
                     steps {
                         echo "building project 1"
-                        //def buildPath = 
-                        build "../" + projectPath + BRANCH_NAME
+                        buildProject(project1Path, BRANCH_NAME)
                     }
                 }
                 stage('project2') {
@@ -63,4 +66,9 @@ pipeline {
 
 def gitDiff(String commit, String name) {
     return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
+}
+
+def buildProject(String projectPath, String branchName) {
+    def buildPath = "../" +  projectPath + branchName
+    build buildPath
 }
