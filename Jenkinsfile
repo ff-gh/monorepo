@@ -22,8 +22,8 @@ pipeline {
                     }
                     steps {
                         echo "building project 1"
-                        def buildPath = "../" + projectPath + BRANCH_NAME
-                        build buildPath
+                        //def buildPath = 
+                        build "../" + projectPath + BRANCH_NAME
                     }
                 }
                 stage('project2') {
