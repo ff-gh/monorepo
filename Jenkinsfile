@@ -1,6 +1,7 @@
 
 pipeline {
     agent any
+    
     environment {
         project1Path = 'project1/'
         project2Path = 'project2/'
@@ -32,25 +33,23 @@ pipeline {
                 stage('project2') {
                     when {
                         expression {
-                            matches = sh(returnStatus: true, script: "git diff --name-only $PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^project2'")
-                            return !matches
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project2Path)
                         }
                     }
                     steps {
                         echo "building project 2"
-                        build "../project2/$BRANCH_NAME"
+                        buildProject(project2Path, BRANCH_NAME)
                     }
                 }
                 stage('project3') {
                     when {
                         expression {
-                            matches = sh(returnStatus: true, script: "git diff --name-only $PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^project3'")
-                            return !matches
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project3Path)
                         }
                     }
                     steps {
                         echo "building project 3"
-                        build "../project3/$BRANCH_NAME"
+                        buildProject(project3Path, BRANCH_NAME)
                     }
                 }
             }
