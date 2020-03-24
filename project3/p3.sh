@@ -1,3 +1,3 @@
 #!/bin/bash
-# test #1
+# test #2
 echo "building project 3!"
