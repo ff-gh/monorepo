@@ -10,6 +10,8 @@ pipeline {
                     env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
                 }
             }
+        }
+        stage('parallel builds') {
             parallel {
                 stage('project1') {
                     when {
