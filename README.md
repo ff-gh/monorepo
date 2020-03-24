@@ -1,4 +1,4 @@
-# monlithic repository
+# Monlithic Repository
 sample project for building a jenkins pipeline using a monolithic repository
 
 - root jenkinsfile 
