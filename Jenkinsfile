@@ -16,13 +16,14 @@ pipeline {
                 stage('project1') {
                     when {
                         expression {
-                            matches = sh(returnStatus: true, script: "git diff --name-only $PREVIOUS_SUCCESSFUL_COMMIT|egrep -q '^project1'")
-                            return !matches
+                            def projectPath = 'project1/'
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, projectPath)
                         }
                     }
                     steps {
                         echo "building project 1"
-                        build "../project1/$BRANCH_NAME"
+                        def buildPath = "../" + projectPath + BRANCH_NAME
+                        build buildPath
                     }
                 }
                 stage('project2') {
@@ -58,4 +59,8 @@ pipeline {
             }
         }
     }
+}
+
+def gitDiff(String commit, String name) {
+    return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
 }
