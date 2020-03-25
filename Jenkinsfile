@@ -63,19 +63,18 @@ def buildProject(String projectPath, String branchName) {
 def generateBuildStage(String projectPath, def previousSuccessfulCommit) {
     return {
         stage("Building: $projectPath") {
-            // echo "Start building $project"
-            // when {
-            //     expression {
-            //         return !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, 
-            //             projectPath)
-            //     }
-            // }
-            // steps {
-            //     echo "building $project"
-            //     buildProject(projectPath, "${env.BRANCH_NAME}")
-            // }
-            echo "projectPath $projectPath - previousSuccessfulCommit $previousSuccessfulCommit"
-            sh script: "sleep 30"
+            when {
+                expression {
+                    return !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, 
+                        projectPath)
+                }
+            }
+            steps {
+                echo "building $projectPath"
+                buildProject(projectPath, "${env.BRANCH_NAME}")
+            }
+            //echo "projectPath $projectPath - previousSuccessfulCommit $previousSuccessfulCommit"
+            //sh script: "sleep 30"
             //echo "End of building $project"
         }
     }
