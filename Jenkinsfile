@@ -1,7 +1,8 @@
 
+def buildfiles = []
 pipeline {
     agent any
-    
+
     environment {
         project1Path = 'project1/'
         project2Path = 'project2/'
@@ -14,44 +15,22 @@ pipeline {
                 script {
                     def scmVars = checkout scm
                     env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+                    def gradleFiles = findFiles(glob: '**/build.gradle')
+                    def npmPackageFiles = findFiles(glob: '**/package.json')
+                    buildfiles = gradleFiles.addAll(npmPackageFiles)
+                    buildfiles.each {
+                        buildfile -> println "build file ${buildfile}"
+                    }
                 }
             }
         }
-        stage('parallel builds') {
-            parallel {
-                stage('project1') {
-                    when {
-                        expression {
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1Path)
-                        }
-                    }
-                    steps {
-                        echo "building project 1"
-                        buildProject(project1Path, BRANCH_NAME)
-                    }
+        stage('parallel builds stage') {
+            script {
+                def parallelStagesMap = buildfiles.collectEntries { buildfile ->
+                    ["${buildfile}" : generateBuildStage(buildfile, 
+                        PREVIOUS_SUCCESSFUL_COMMIT)]
                 }
-                stage('project2') {
-                    when {
-                        expression {
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project2Path)
-                        }
-                    }
-                    steps {
-                        echo "building project 2"
-                        buildProject(project2Path, BRANCH_NAME)
-                    }
-                }
-                stage('project3') {
-                    when {
-                        expression {
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project3Path)
-                        }
-                    }
-                    steps {
-                        echo "building project 3"
-                        buildProject(project3Path, BRANCH_NAME)
-                    }
-                }
+                parallel parallelStagesMap
             }
         }
         stage('wrap up'){
@@ -70,4 +49,25 @@ def gitDiff(String commit, String name) {
 def buildProject(String projectPath, String branchName) {
     def buildPath = "../" +  projectPath + branchName
     build buildPath
+}
+
+def generateBuildStage(String projectPath, def previousSuccessfulCommit) {
+    return {
+        stage("Building: $project") {
+            // echo "Start building $project"
+            // when {
+            //     expression {
+            //         return !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, 
+            //             projectPath)
+            //     }
+            // }
+            // steps {
+            //     echo "building $project"
+            //     buildProject(projectPath, "${env.BRANCH_NAME}")
+            // }
+            echo "projectPath $projectPath - previousSuccessfulCommit $previousSuccessfulCommit"
+            sh script: "sleep 30"
+            //echo "End of building $project"
+        }
+    }
 }
