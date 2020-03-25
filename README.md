@@ -22,4 +22,5 @@ sample project for building a jenkins pipeline using a monolithic repository
     - Branch Sources: configure the git repo to `Discover branches` and `Check out to matching local branch`
     - Build Configuration: ensure the `Script Path` points to the jenkinsfile in the root of the project
     - Ensure a webhook is configured to update this pipeline since it will be handling the commits
+- for detailed configurations see the wiki: https://github.com/ff-gh/monorepo/wiki
 
