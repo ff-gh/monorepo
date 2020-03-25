@@ -3,11 +3,11 @@ def buildfiles = []
 pipeline {
     agent any
 
-    environment {
-        project1Path = 'project1/'
-        project2Path = 'project2/'
-        project3Path = 'project3/'
-    }
+    // environment {
+    //     project1Path = 'project1/'
+    //     project2Path = 'project2/'
+    //     project3Path = 'project3/'
+    // }
 
     stages {
         stage('init') {
@@ -25,12 +25,14 @@ pipeline {
             }
         }
         stage('parallel builds stage') {
-            script {
-                def parallelStagesMap = buildfiles.collectEntries { buildfile ->
-                    ["${buildfile}" : generateBuildStage(buildfile, 
-                        PREVIOUS_SUCCESSFUL_COMMIT)]
+            steps {
+                script {
+                    def parallelStagesMap = buildfiles.collectEntries { buildfile ->
+                        ["${buildfile}" : generateBuildStage(buildfile, 
+                            PREVIOUS_SUCCESSFUL_COMMIT)]
+                    }
+                    parallel parallelStagesMap
                 }
-                parallel parallelStagesMap
             }
         }
         stage('wrap up'){
@@ -53,7 +55,7 @@ def buildProject(String projectPath, String branchName) {
 
 def generateBuildStage(String projectPath, def previousSuccessfulCommit) {
     return {
-        stage("Building: $project") {
+        stage("Building: $projectPath") {
             // echo "Start building $project"
             // when {
             //     expression {
