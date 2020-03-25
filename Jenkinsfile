@@ -24,6 +24,7 @@ pipeline {
                         println "package.json file ${it}"
                     }
                     buildfiles.addAll(gradleFiles)
+                    buildfiles.addAll(npmPackageFiles)
                     // buildfiles = gradleFiles.addAll(npmPackageFiles)
                     // buildfiles.each {
                     //     buildfile -> println "build file ${buildfile}"
@@ -35,8 +36,7 @@ pipeline {
             steps {
                 script {
                     def parallelStagesMap = buildfiles.collectEntries { buildfile ->
-                        ["${buildfile}" : generateBuildStage(buildfile, 
-                            PREVIOUS_SUCCESSFUL_COMMIT)]
+                        ["${buildfile}" : generateBuildStage(buildfile, PREVIOUS_SUCCESSFUL_COMMIT)]
                     }
                     parallel parallelStagesMap
                 }
