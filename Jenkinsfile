@@ -16,11 +16,17 @@ pipeline {
                     def scmVars = checkout scm
                     env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
                     def gradleFiles = findFiles(glob: '**/build.gradle')
-                    def npmPackageFiles = findFiles(glob: '**/package.json')
-                    buildfiles = gradleFiles.addAll(npmPackageFiles)
-                    buildfiles.each {
-                        buildfile -> println "build file ${buildfile}"
+                    gradleFiles.each {
+                        println "gradlefile ${it}"
                     }
+                    def npmPackageFiles = findFiles(glob: '**/package.json')
+                    npmPackageFiles.each {
+                        println "package.json file ${it}"
+                    }
+                    // buildfiles = gradleFiles.addAll(npmPackageFiles)
+                    // buildfiles.each {
+                    //     buildfile -> println "build file ${buildfile}"
+                    // }
                 }
             }
         }
