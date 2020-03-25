@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     def parallelStagesMap = buildfiles.collectEntries { buildfile ->
-                        ["${buildfile}" : generateBuildStage(buildfile, PREVIOUS_SUCCESSFUL_COMMIT)]
+                        ["${buildfile.path}" : generateBuildStage(buildfile.path, PREVIOUS_SUCCESSFUL_COMMIT)]
                     }
                     parallel parallelStagesMap
                 }
