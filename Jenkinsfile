@@ -1,8 +1,7 @@
 
 def buildfiles = []
 node {
-    stages {
-        stage('init') {
+    stage('init') {
             def scmVars = checkout scm
             env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
             def gradleFiles = findFiles(glob: '**/build.gradle')
@@ -15,17 +14,16 @@ node {
             }
             buildfiles.addAll(gradleFiles)
             buildfiles.addAll(npmPackageFiles)
-        }
-        stage('parallel builds stage') {
+    }
+    stage('parallel builds stage') {
             def parallelStagesMap = buildfiles.collectEntries { buildfile ->
                 ["${buildfile.path}" : generateBuildStage(buildfile.path, PREVIOUS_SUCCESSFUL_COMMIT)]
             }
             parallel parallelStagesMap
-        }
-        stage('wrap up'){
+    }
+    stage('wrap up'){
             echo "branch: $BRANCH_NAME"
             echo "ok #12"
-        }
     }
 }
 
