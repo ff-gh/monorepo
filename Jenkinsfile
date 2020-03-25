@@ -23,7 +23,7 @@ pipeline {
                     npmPackageFiles.each {
                         println "package.json file ${it}"
                     }
-                    buildfiles.addAll(gradleFiles).addAll(npmPackageFiles)
+                    buildfiles.addAll(gradleFiles)
                     // buildfiles = gradleFiles.addAll(npmPackageFiles)
                     // buildfiles.each {
                     //     buildfile -> println "build file ${buildfile}"
