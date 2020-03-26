@@ -17,7 +17,7 @@ node {
     }
     stage('parallel builds stage') {
             def parallelStagesMap = buildfiles.collectEntries { buildfile ->
-                ["${buildfile.path}" : generateBuildStage(buildfile.getPath().take(buildfile.getPath().length()-buildfile.getName().length()), PREVIOUS_SUCCESSFUL_COMMIT, PREVIOUS_SUCCESSFUL_COMMIT)]
+                ["${buildfile.path}" : generateBuildStage(buildfile.getPath().take(buildfile.getPath().length()-buildfile.getName().length()), PREVIOUS_SUCCESSFUL_COMMIT)]
             }
             parallel parallelStagesMap
     }
