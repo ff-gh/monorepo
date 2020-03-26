@@ -1,3 +1,4 @@
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 def buildfiles = []
 node {
@@ -38,7 +39,7 @@ def buildProject(String projectPath, String branchName) {
 
 def generateBuildStage(String projectPath, def previousSuccessfulCommit) {
     return {
-        stage("Building: $projectPath") {
+        stage("Building: $projectPath", !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, projectPath)) {
             // when {
             //     expression {
             //         return !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, 
@@ -46,14 +47,20 @@ def generateBuildStage(String projectPath, def previousSuccessfulCommit) {
             //     }
             // }
             // steps {
-            if(!gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, 
-                         projectPath)) {
-                echo "building $projectPath"
-                buildProject(projectPath, "${env.BRANCH_NAME}")
-            }
+            echo "building $projectPath"
+            buildProject(projectPath, "${env.BRANCH_NAME}")
+            
             //echo "projectPath $projectPath - previousSuccessfulCommit $previousSuccessfulCommit"
             //sh script: "sleep 30"
             //echo "End of building $project"
         }
     }
+}
+
+// override stage method to implement the skipping of stages
+def stage(name, execute, block) {
+    return stage(name, execute ? block : {
+        echo "skipped stage $name"
+        Utils.markStageSkippedForConditional(STAGE_NAME)
+    })
 }
