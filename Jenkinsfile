@@ -1,6 +1,8 @@
 
 pipeline {
-    agent any
+    agent {
+        label 'app-server'
+    }
     
     environment {
         project1Path = 'project1/'
