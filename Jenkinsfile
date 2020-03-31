@@ -29,6 +29,8 @@ pipeline {
                     }
                     steps {
                         echo "building project 1"
+                        sh "printenv"
+
                         buildProject(project1Path, BRANCH_NAME)
                     }
                 }
