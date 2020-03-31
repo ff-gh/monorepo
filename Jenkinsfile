@@ -5,9 +5,9 @@ pipeline {
     }
     
     environment {
-        project1JenkinsPath = 'Project_1/'
-        project2JenkinsPath = 'Project_2/'
-        project3JenkinsPath = 'Project_3/'
+        project1JenkinsPath = 'Project 1/'
+        project2JenkinsPath = 'Project 2/'
+        project3JenkinsPath = 'Project 3/'
         
         project1RepoPath = 'project1/'
         project2RepoPath = 'project2/'
