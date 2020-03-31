@@ -67,7 +67,6 @@ pipeline {
 
 def gitDiff(String commit, String name) {
     echo "Diffing git info for commit " + commit + " for project " + name
-    echo sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
     return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
 }
 
