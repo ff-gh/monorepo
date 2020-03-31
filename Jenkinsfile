@@ -26,7 +26,6 @@ pipeline {
         stage('parallel builds') {
             parallel {
                 stage('project1') {
-                    sh "printenv"
                     when {
                         expression {
                             return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1RepoPath)
