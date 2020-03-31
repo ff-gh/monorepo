@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     def scmVars = checkout scm
-                    env.PREVIOUS_SUCCESSFUL_COMMIT = "2b121bf6d7951908509df94e353713e20a40b282"
+                    env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
                 }
             }
         }
