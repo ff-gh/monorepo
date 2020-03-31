@@ -5,9 +5,13 @@ pipeline {
     }
     
     environment {
-        project1Path = 'Project_1'
-        project2Path = 'Project_2'
-        project3Path = 'Project_3'
+        project1JenkinsPath = 'Project_1/'
+        project2JenkinsPath = 'Project_2/'
+        project3JenkinsPath = 'Project_3/'
+        
+        project1RepoPath = 'project1/'
+        project2RepoPath = 'project2/'
+        project3RepoPath = 'project3/'
     }
 
     stages {
@@ -22,38 +26,38 @@ pipeline {
         stage('parallel builds') {
             parallel {
                 stage('project1') {
-                    // when {
-                    //     expression {
-                    //         return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1Path)
-                    //     }
-                    // }
+                    sh "printenv"
+                    when {
+                        expression {
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1RepoPath)
+                        }
+                    }
                     steps {
-                        sh "printenv"
                         echo "building project 1"
 
-                        buildProject(project1Path, BRANCH_NAME)
+                        buildProject(project1JenkinsPath, BRANCH_NAME)
                     }
                 }
                 stage('project2') {
                     when {
                         expression {
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project2Path)
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project2RepoPath)
                         }
                     }
                     steps {
                         echo "building project 2"
-                        buildProject(project2Path, BRANCH_NAME)
+                        buildProject(project2JenkinsPath, BRANCH_NAME)
                     }
                 }
                 stage('project3') {
                     when {
                         expression {
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project3Path)
+                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project3RepoPath)
                         }
                     }
                     steps {
                         echo "building project 3"
-                        buildProject(project3Path, BRANCH_NAME)
+                        buildProject(project3JenkinsPath, BRANCH_NAME)
                     }
                 }
             }
@@ -69,6 +73,8 @@ pipeline {
 
 def gitDiff(String commit, String name) {
     echo "Diffing git info for commit " + commit + " for project " + name
+    // temp, show the diffs
+    sh(script: "git diff --name-only $commit|egrep -q '^$name'")
     return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
 }
 
