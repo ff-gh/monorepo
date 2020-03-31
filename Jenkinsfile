@@ -22,6 +22,7 @@ pipeline {
         stage('parallel builds') {
             parallel {
                 stage('project1') {
+                    sh "printenv"
                     when {
                         expression {
                             return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1Path)
@@ -29,7 +30,6 @@ pipeline {
                     }
                     steps {
                         echo "building project 1"
-                        sh "printenv"
 
                         buildProject(project1Path, BRANCH_NAME)
                     }
