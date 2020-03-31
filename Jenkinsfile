@@ -5,9 +5,9 @@ pipeline {
     }
     
     environment {
-        project1JenkinsPath = 'Project_1'
-        project2JenkinsPath = 'Project_2'
-        project3JenkinsPath = 'Project_3'
+        project1JenkinsPath = 'Project_1/'
+        project2JenkinsPath = 'Project_2/'
+        project3JenkinsPath = 'Project_3/'
         
         project1RepoPath = 'project1/'
         project2RepoPath = 'project2/'
@@ -79,7 +79,8 @@ def gitDiff(String commit, String name) {
 
 def buildProject(String projectPath, String branchName) {
     echo "Building Project: " + projectPath + ", on branch: " + branchName
-    def buildPath = "../monorepo_" +  projectPath + "_" + branchName
+    //def buildPath = "../monorepo_" +  projectPath + "_" + branchName
+    def buildPath = "../" +  projectPath + branchName
 
     echo "Initializing build: " + buildPath
     build buildPath
