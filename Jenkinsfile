@@ -22,13 +22,13 @@ pipeline {
         stage('parallel builds') {
             parallel {
                 stage('project1') {
-                    sh "printenv"
-                    when {
-                        expression {
-                            return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1Path)
-                        }
-                    }
+                    // when {
+                    //     expression {
+                    //         return !gitDiff(PREVIOUS_SUCCESSFUL_COMMIT, project1Path)
+                    //     }
+                    // }
                     steps {
+                        sh "printenv"
                         echo "building project 1"
 
                         buildProject(project1Path, BRANCH_NAME)
