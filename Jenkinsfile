@@ -40,14 +40,13 @@ def gitDiff(String commit, String name) {
 
 def generateBuildStage(String buildName, String jobPath, String projectPath) {
     echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
-    def stageName = "Building: ${buildName}"
     return {
-        stage(stageName) {
+        stage("Building: ${buildName}") {
             if(!gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
                 build jobPath
             } else {
-                echo "Skipped stage $stageName"
-                Utils.markStageSkippedForConditional(stageName)
+                echo "Skipped stage $STAGE_NAME"
+                Utils.markStageSkippedForConditional(STAGE_NAME)
             }
         }
     }
