@@ -18,7 +18,7 @@ node('app-server') {
             echo "Filtered Jobs: ${filteredJobs}"
 
             echo "Building parallel builds map"
-            parallelBuilds = filteredJobs.collect{
+            parallelBuilds = filteredJobs.collectEntries{
                 [ "${it.buildName}" : generateBuildStage(it.buildName, it.jobPath, it.jobScriptPath) ]
             }
             filteredJobs = null
