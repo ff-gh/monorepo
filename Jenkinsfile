@@ -19,7 +19,7 @@ node('app-server') {
 
             echo "Building parallel builds map"
             parallelBuilds = filteredJobs.collect{
-                [ "${it[0]}" : generateBuildStage(buildName, it[0], it[1]) ]
+                [ "${it.buildName}" : generateBuildStage(it.buildName, it.jobPath, it.jobScriptPath) ]
             }
             filteredJobs = null
             echo "Parallel builds map: ${parallelBuilds}"
@@ -75,6 +75,6 @@ def getFilteredJobs() {
         def buildName = it.fullName.split('/')[1]
         def jobScriptPath = it.definition.scriptPath.split("/")[0]
 
-        [buildName, jobScriptPath]
+        ["buildName" : buildName, "jobScriptPath" : jobScriptPath, "jobPath" : it.fullName]
     }
 }
