@@ -5,7 +5,7 @@ import groovy.transform.Field
 @Field
 final def JENKINS_FOLDER_NAME = "monorepo"
 @Field
-def parallelBuilds = [:]
+def parallelBuilds
 
 node('app-server') {
     stage('Init') {
@@ -21,14 +21,12 @@ node('app-server') {
             parallelBuilds = filteredJobs.collectEntries{
                 [ "${it.buildName}" : generateBuildStage(it.buildName, it.jobPath, it.jobScriptPath) ]
             }
-            filteredJobs = null
             echo "Parallel builds map: ${parallelBuilds}"
     }
     
     parallel parallelBuilds
 
     stage('wrap up'){
-            parallelBuilds = null
             echo "branch: $BRANCH_NAME"
             echo "ok #12"
     }
@@ -43,12 +41,12 @@ def generateBuildStage(String buildName, String jobPath, String projectPath) {
     echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
     return {
         stage("Building: ${buildName}") {
-            // if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
+            if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
                 build jobPath
-            // } else {
-            //     echo "Skipped stage ${buildName}"
-            //     Utils.markStageSkippedForConditional(STAGE_NAME)
-            // }
+            } else {
+                echo "Skipped stage ${buildName}"
+                Utils.markStageSkippedForConditional(STAGE_NAME)
+            }
         }
     }
 }
