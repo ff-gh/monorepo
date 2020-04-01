@@ -24,6 +24,7 @@ node('app-server') {
 
                 [ "${buildName}" : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
             }
+            filteredJobs = null
             echo "Parallel builds map: ${parallelBuilds}"
     }
     
