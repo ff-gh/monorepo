@@ -3,6 +3,7 @@ import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 def buildfiles = []
 node('app-server') {
     stage('init') {
+            sh 'printenv'
             def scmVars = checkout scm
             env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
             def gradleFiles = findFiles(glob: '**/build.gradle')
@@ -16,7 +17,9 @@ node('app-server') {
             buildfiles.addAll(gradleFiles)
             buildfiles.addAll(npmPackageFiles)
 
-            getAllProjects().each{ item -> 
+            def availableProjects = getAllProjects()
+
+            availableProjects.each{ item -> 
                 println item.fullName
             }
 
@@ -72,6 +75,7 @@ def stage(name, execute, block) {
         Utils.markStageSkippedForConditional(STAGE_NAME)
     })
 }
+
 
 def getAllProjects() {
     return Jenkins.instance.getAllItems(org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject.class)
