@@ -42,6 +42,7 @@ def gitDiff(String commit, String name) {
 
 def generateBuildStage(String buildName, String jobPath, String projectPath) {
     echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
+    return "TEST"
     // return {
     //     stage("Building: ${buildName}") {
     //         // if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
