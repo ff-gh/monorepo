@@ -19,10 +19,7 @@ node('app-server') {
 
             echo "Building parallel builds map"
             parallelBuilds = filteredJobs.collect{
-                def buildName = it.fullName.split('/')[1]
-                def jobScriptPath = it.definition.scriptPath.split("/")[0]
-
-                [ "${buildName}" : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
+                [ "${it[0]}" : generateBuildStage(buildName, it[0], it[1]) ]
             }
             filteredJobs = null
             echo "Parallel builds map: ${parallelBuilds}"
@@ -69,10 +66,15 @@ def generateBuildStage(String buildName, String jobPath, String projectPath) {
  * of this pipeline should only run the 'develop' branche of the downstream projects.
  */
 def getFilteredJobs() {
-    echo "Getting filtered jobs"
+    echo "Getting filtered jobs data"
     return Jenkins.instance.getAllItems(Job.class).findAll{
         (it.fullName != "${JOB_NAME}") &&                       //Don't get current job
         (it.fullName.split('/')[0] == JENKINS_FOLDER_NAME) &&   //Only get those in folder
         (it.name == BRANCH_NAME)                                //Only get matching branches
+    }.collect{
+        def buildName = it.fullName.split('/')[1]
+        def jobScriptPath = it.definition.scriptPath.split("/")[0]
+
+        [buildName, jobScriptPath]
     }
 }
