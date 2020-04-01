@@ -8,7 +8,8 @@ def parallelBuilds = [:]
 node('app-server') {
     stage('Init') {
             echo "Checking out git repository"
-            checkout scm
+            def scmVars = checkout scm
+            echo "${scmVars}"
             sh 'printenv'
 
             def filteredJobs = getFilteredJobs()
@@ -65,7 +66,7 @@ def generateBuildStage(String buildName, String jobPath, String projectPath) {
  */
 def getFilteredJobs() {
     echo "Getting filtered jobs"
-    return Jenkins.instance.getAllItems(Job.class).findall{
+    return Jenkins.instance.getAllItems(Job.class).findAll{
         (it.fullName != "${JOB_NAME}") &&                       //Don't get current job
         (it.fullName.split('/')[0] == JENKINS_FOLDER_NAME) &&   //Only get those in folder
         (it.name == BRANCH_NAME)                                //Only get matching branches
