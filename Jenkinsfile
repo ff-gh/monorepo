@@ -22,12 +22,12 @@ node('app-server') {
                 def buildName = "${it.fullName.split('/')[1]}"
                 def jobScriptPath = it.definition.scriptPath.split("/")[0]
 
-                [ buildName : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
+                [ "${buildName}" : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
             }
             echo "Parallel builds map: ${parallelBuilds}"
     }
     
-    parallel buildMap
+    parallel parallelBuilds
 
     stage('wrap up'){
             echo "branch: $BRANCH_NAME"
