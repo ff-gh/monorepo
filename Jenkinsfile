@@ -1,38 +1,31 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 
-def buildfiles = []
+final def JENKINS_FOLDER_NAME = "monorepo"
+
+def parallelBuilds = [:]
+
 node('app-server') {
-    stage('init') {
+    stage('Init') {
+            echo "Checking out git repository"
+            checkout scm
             sh 'printenv'
-            def scmVars = checkout scm
-            env.PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT
-            def gradleFiles = findFiles(glob: '**/build.gradle')
-            gradleFiles.each {
-                println "gradlefile ${it.path} - directory ${it.directory} - name ${it.name}"
-            }
-            def npmPackageFiles = findFiles(glob: '**/package.json')
-            npmPackageFiles.each {
-                println "package.json file ${it}"
-            }
-            buildfiles.addAll(gradleFiles)
-            buildfiles.addAll(npmPackageFiles)
 
-            def availableProjects = getAllProjects()
+            def filteredJobs = getFilteredJobs()
+            echo "Filtered Jobs: ${filteredJobs}"
 
-            availableProjects.each{ item -> 
-                println item.fullName
-            }
+            echo "Building parallel builds map"
+            parallelBuilds = filteredJobs.collect{
+                def buildName = "${it.fullName.split('/')[1]}"
+                def jobScriptPath = it.definition.scriptPath.split("/")[0]
 
-            getAvailableJobs().each{item -> 
-                println item.fullName
+                [ buildName : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
             }
+            echo "Parallel builds map: ${parallelBuilds}"
     }
-    stage('parallel builds stage') {
-            def parallelStagesMap = buildfiles.collectEntries { buildfile ->
-                ["${buildfile.path}" : generateBuildStage(buildfile.getPath().take(buildfile.getPath().length()-buildfile.getName().length()), PREVIOUS_SUCCESSFUL_COMMIT)]
-            }
-            parallel parallelStagesMap
-    }
+    
+    parallel buildMap
+
     stage('wrap up'){
             echo "branch: $BRANCH_NAME"
             echo "ok #12"
@@ -40,47 +33,41 @@ node('app-server') {
 }
 
 def gitDiff(String commit, String name) {
+    echo "Diffing commit: ${commit} for project ${name}"
     return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
 }
 
-def buildProject(String projectPath, String branchName) {
-    def buildPath = "../" +  projectPath + branchName
-    build buildPath
-}
-
-def generateBuildStage(String projectPath, def previousSuccessfulCommit) {
+def generateBuildStage(String buildName, String jobPath, String projectPath) {
+    echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
     return {
-        stage("Building: $projectPath", !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, projectPath)) {
-            // when {
-            //     expression {
-            //         return !gitDiff(previousSuccessfulCommit /*PREVIOUS_SUCCESSFUL_COMMIT*/, 
-            //             projectPath)
-            //     }
-            // }
-            // steps {
-            echo "building $projectPath"
-            buildProject(projectPath, "${env.BRANCH_NAME}")
-            
-            //echo "projectPath $projectPath - previousSuccessfulCommit $previousSuccessfulCommit"
-            //sh script: "sleep 30"
-            //echo "End of building $project"
+        stage("Building: ${buildName}") {
+            if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
+                build jobPath
+            } else {
+                echo "Skipped stage ${buildName}"
+                Utils.markStageSkippedForConditional(STAGE_NAME)
+            }
         }
     }
 }
 
-// override stage method to implement the skipping of stages
-def stage(name, execute, block) {
-    return stage(name, execute ? block : {
-        echo "skipped stage $name"
-        Utils.markStageSkippedForConditional(STAGE_NAME)
-    })
-}
-
-
-def getAllProjects() {
-    return Jenkins.instance.getAllItems(org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject.class)
-}
-
-def getAvailableJobs() {
-    return Jenkins.instance.getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob.class)
+/**
+ * Gets a list of downstream jobs.
+ *
+ * Searches the Jenkins instance for all available jobs. Filters out the current job, filters out those that are not
+ * within the folder specified by JENKINS_FOLDER_NAME, and only collects those with the same name as this job. 
+ * 
+ * A folder in this context is one created in Jenkins to hold multiple pipelines. It does not refer to any filesystem
+ * or source control system.
+ *
+ * The names are matched in order to run specific branches of a monorepo. For example, running the 'develop' branch
+ * of this pipeline should only run the 'develop' branche of the downstream projects.
+ */
+def getFilteredJobs() {
+    echo "Getting filtered jobs"
+    return Jenkins.instance.getAllItems(Job.class).findall{
+        (it.fullName != "${JOB_NAME}") &&                       //Don't get current job
+        (it.fullName.split('/')[0] == JENKINS_FOLDER_NAME) &&   //Only get those in folder
+        (it.name == BRANCH_NAME)                                //Only get matching branches
+    }
 }
