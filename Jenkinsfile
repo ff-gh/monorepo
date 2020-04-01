@@ -15,6 +15,11 @@ node('app-server') {
             }
             buildfiles.addAll(gradleFiles)
             buildfiles.addAll(npmPackageFiles)
+
+            getAvailableJobs().each{item -> 
+                println item
+                println item.fullName
+            }
     }
     stage('parallel builds stage') {
             def parallelStagesMap = buildfiles.collectEntries { buildfile ->
@@ -63,4 +68,8 @@ def stage(name, execute, block) {
         echo "skipped stage $name"
         Utils.markStageSkippedForConditional(STAGE_NAME)
     })
+}
+
+def getAvailableJobs() {
+    return Jenkins.instance.getAllItems(AbstractItem.class)
 }
