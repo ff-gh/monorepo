@@ -16,8 +16,11 @@ node('app-server') {
             buildfiles.addAll(gradleFiles)
             buildfiles.addAll(npmPackageFiles)
 
+            getAllProjects().each{ item -> 
+                println item.fullName
+            }
+
             getAvailableJobs().each{item -> 
-                println item
                 println item.fullName
             }
     }
@@ -70,6 +73,10 @@ def stage(name, execute, block) {
     })
 }
 
+def getAllProjects() {
+    return Jenkins.instance.getAllItems(org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject.class)
+}
+
 def getAvailableJobs() {
-    return Jenkins.instance.getAllItems(AbstractItem.class)
+    return Jenkins.instance.getAllItems(org.jenkinsci.plugins.workflow.job.WorkflowJob.class)
 }
