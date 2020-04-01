@@ -1,5 +1,6 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
+import groovy.transform.Field
 
 @Field
 final def JENKINS_FOLDER_NAME = "monorepo"
