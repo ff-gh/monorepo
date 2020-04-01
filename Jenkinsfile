@@ -5,17 +5,17 @@ import groovy.transform.Field
 @Field
 final def JENKINS_FOLDER_NAME = "monorepo"
 @Field
-def parallelBuilds
+def parallelBuilds = [:]
 
 node('app-server') {
     stage('Init') {
             echo "Checking out git repository"
             def scmVars = checkout scm
-            // echo "${scmVars}"
+            echo "${scmVars}"
             sh 'printenv'
 
             def filteredJobs = getFilteredJobs()
-            // echo "Filtered Jobs: ${filteredJobs}"
+            echo "Filtered Jobs: ${filteredJobs}"
 
             echo "Building parallel builds map"
             parallelBuilds = filteredJobs.collect{
@@ -24,6 +24,7 @@ node('app-server') {
 
                 [ "${buildName}" : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
             }
+            echo "Parallel builds map: ${parallelBuilds}"
     }
     
     parallel parallelBuilds
@@ -35,20 +36,20 @@ node('app-server') {
 }
 
 def gitDiff(String commit, String name) {
-    // echo "Diffing commit: ${commit} for project ${name}"
+    echo "Diffing commit: ${commit} for project ${name}"
     return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
 }
 
 def generateBuildStage(String buildName, String jobPath, String projectPath) {
-    // echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
+    echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
     return {
         stage("Building: ${buildName}") {
-            if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
+            // if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
                 build jobPath
-            } else {
-                // echo "Skipped stage ${buildName}"
-                Utils.markStageSkippedForConditional(STAGE_NAME)
-            }
+            // } else {
+            //     echo "Skipped stage ${buildName}"
+            //     Utils.markStageSkippedForConditional(STAGE_NAME)
+            // }
         }
     }
 }
