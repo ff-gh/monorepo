@@ -11,6 +11,7 @@ node('app-server') {
     stage('Init') {
             echo "Checking out git repository"
             def scmVars = checkout scm
+            env.GIT_PREVIOUS_COMMIT = scmVars.GIT_PREVIOUS_COMMIT
             echo "${scmVars}"
             sh 'printenv'
 
@@ -26,7 +27,7 @@ node('app-server') {
     
     parallel parallelBuilds
 
-    stage('wrap up'){
+    stage('Wrap Up'){
             echo "branch: $BRANCH_NAME"
             echo "ok #12"
     }
