@@ -22,7 +22,7 @@ node('app-server') {
                 def buildName = it.fullName.split('/')[1]
                 def jobScriptPath = it.definition.scriptPath.split("/")[0]
 
-                [ "${buildName}" : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
+                [ it.name : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
             }
             echo "Parallel builds map: ${parallelBuilds}"
     }
@@ -42,17 +42,16 @@ def gitDiff(String commit, String name) {
 
 def generateBuildStage(String buildName, String jobPath, String projectPath) {
     echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
-    return "TEST"
-    // return {
-    //     stage("Building: ${buildName}") {
-    //         // if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
-    //             build jobPath
-    //         // } else {
-    //         //     echo "Skipped stage ${buildName}"
-    //         //     Utils.markStageSkippedForConditional(STAGE_NAME)
-    //         // }
-    //     }
-    // }
+    return {
+        stage("Building: ${buildName}") {
+            // if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
+                build jobPath
+            // } else {
+            //     echo "Skipped stage ${buildName}"
+            //     Utils.markStageSkippedForConditional(STAGE_NAME)
+            // }
+        }
+    }
 }
 
 /**
