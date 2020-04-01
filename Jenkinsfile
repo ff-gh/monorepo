@@ -5,7 +5,7 @@ import groovy.transform.Field
 @Field
 final def JENKINS_FOLDER_NAME = "monorepo"
 @Field
-def parallelBuilds = [:]
+def parallelBuilds
 
 node('app-server') {
     stage('Init') {
@@ -24,7 +24,6 @@ node('app-server') {
 
                 [ "${buildName}" : generateBuildStage(buildName, it.fullName, jobScriptPath) ]
             }
-            echo "Parallel builds map: ${parallelBuilds}"
     }
     
     parallel parallelBuilds
