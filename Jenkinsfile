@@ -1,8 +1,9 @@
 import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject
 
+@Field
 final def JENKINS_FOLDER_NAME = "monorepo"
-
+@Field
 def parallelBuilds = [:]
 
 node('app-server') {
