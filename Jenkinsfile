@@ -35,14 +35,14 @@ node('app-server') {
 
 def gitDiff(String commit, String name) {
     echo "Diffing commit: ${commit} for project ${name}"
-    return sh(returnStatus: true, script: "git diff --name-only $commit|egrep -q '^$name'")
+    return sh(returnStatus: true, script: "git diff --name-only $commit | egrep -q '^$name'")
 }
 
 def generateBuildStage(String buildName, String jobPath, String projectPath) {
     echo "Generating build stage for '${buildName}', '${jobPath}', '${projectPath}'"
     return {
         stage("Building: ${buildName}") {
-            if(gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
+            if(!gitDiff("${GIT_PREVIOUS_COMMIT}", projectPath)){
                 build jobPath
             } else {
                 echo "Skipped stage ${buildName}"
