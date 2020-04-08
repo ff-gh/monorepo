@@ -7,7 +7,7 @@ final def JENKINS_FOLDER_NAME = "monorepo"
 @Field
 def parallelBuilds
 
-node('any') {
+node {
     stage('Init') {
             echo "Checking out git repository"
             def scmVars = checkout scm
